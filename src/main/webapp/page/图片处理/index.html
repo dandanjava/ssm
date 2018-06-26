@@ -1,0 +1,181 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>filter十大滤镜效果演示</title>
+<link href="css/index.css" type="text/css" rel="stylesheet">
+  <script src="../../js/jquery-3.2.1.js"></script>
+  <link href="../../css/cropper.css" rel="stylesheet">
+  <script src="../../js/cropper.js"></script>
+
+</head>
+<script src="js/index.js"></script>
+<script>
+    $(function () {
+    //初始化cropper
+    $('#img').cropper({
+        aspectRatio: 16 / 9,
+        viewMode:1,
+        dragMode:'none',
+        preview:".small",
+        responsive:false,
+        restore:false,
+//        modal:false,
+//        guides:false,
+//        background:false,
+//        autoCrop:false,
+//        autoCropArea:0.1,
+//        movable:false,
+//        scalable:false,
+//        zoomable:false,
+//        wheelZoomRatio:false,
+//        cropBoxMovable:false,
+//        cropBoxResizable:false,
+        ready:function () {
+            console.log("ready");
+        },
+        cropstart: function (e) {
+            console.log("cropstart");
+        },
+        cropmove: function (e) {
+            console.log("cropmove");
+        },
+        cropend: function (e) {
+            console.log("cropend");
+        },
+        crop: function (e) {
+            console.log("crop");
+        },
+        zoom: function (e) {
+            console.log("zoom");
+        }
+    });
+
+
+
+    var inputImage = document.getElementById('inputImage');
+    var URL = window.URL || window.webkitURL;
+    var blobURL;
+
+    if (URL) {
+        inputImage.onchange = function () {
+            var files = this.files;
+            var file;
+            if (files && files.length) {
+                file = files[0];
+                if (/^image\/\w+/.test(file.type)) {
+                    blobURL = URL.createObjectURL(file);
+                    $('#img').cropper("replace",blobURL);
+                } else {
+                    window.alert('Please choose an image file.');
+                }
+            }
+            $(inputImage).find("img").hide();
+        };
+    } else {
+        inputImage.disabled = true;
+        inputImage.parentNode.className += ' disabled';
+    }
+
+
+//    //将图像和裁剪框重置为初始状态
+//    $("#reset").on("click", function () {
+//        alert("reset");
+//        $('#img').cropper('reset');
+//    });
+
+
+//    //清除裁切框
+//    $("#clear").on("click", function () {
+//        $('#img').cropper('clear');
+//    });
+//    //替换图像的src并重新构建cropper
+//    $("#replace").on("click", function () {
+//        $('#img').cropper('replace',"../../image/598abe74N96590952.jpg",true );
+//    });
+
+
+    });
+    function upload() {
+        $('#img').cropper('getCroppedCanvas').toBlob(function (blob) {
+            debugger;
+            var cas=$('#image').cropper('getCroppedCanvas');
+            $('.cavans').html(cas)  //在body显示出canvas元素
+            var formData = new FormData();
+            formData.append('croppedImage', blob,new Date().getTime()+".png");
+            console.log("base64url:"+cas.toDataURL('image/jpeg'));
+            console.log("BLOB:"+blob);
+            $.ajax('/cropperController/upload.mvc', {
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    console.log('Upload success');
+                },
+                error: function () {
+                    console.log('Upload error');
+                }
+            });
+        });
+    }
+
+</script>
+<body>
+<div>
+
+  <input id="photoBtn" type="button" onclick="document.getElementById('inputImage').click()" value="选择照片"><!-- 可以增加自己的样式 -->
+  <input  id="inputImage"  type="file" accept="image/*" style="display: none;"/>
+  <img src="img/123.jpg" id="img" way="" onClick="css3_filter(this.id)" />
+
+
+  <table cellspacing="0">
+    <tr>
+      <td name="button" id="grayscale" onClick="css3_filter(this.id)">灰度</td>
+      <td name="button" id="sepia" onClick="css3_filter(this.id)">褐色</td>
+      <td name="button" id="saturate" onClick="css3_filter(this.id)">饱和度</td>
+      <td name="button" id="hue-rotate" onClick="css3_filter(this.id)">色相旋转</td>
+      <td name="button" id="invert" onClick="css3_filter(this.id)">反色</td>
+      <td name="button" id="opacity" onClick="css3_filter(this.id)">透明度</td>
+      <td name="button" id="brightness" onClick="css3_filter(this.id)">亮度</td>
+      <td name="button" id="contrast" onClick="css3_filter(this.id)">对比度</td>
+      <td name="button" id="blur" onClick="css3_filter(this.id)">模糊</td>
+      <td name="button" id="drop-shadow" onClick="css3_filter(this.id)">阴影</td>
+    </tr>
+    <tr>
+      <td colspan="10" id="value">
+       属性值（点击图片取消所有效果）
+      </td>
+    </tr>
+    <tr>
+      <td colspan="10" id="value1" onClick="stylea()">
+      灰度:<output id='1'>0</output>
+      褐色:<output id='2'>0</output>
+      饱和度:<output id='3'>0</output>
+      色相:<output id='4'>0</output>
+      反色:<output id='5'>0</output>
+      透明度:<output id='6'>0</output>
+      亮度:<output id='7'>0</output>
+      对比度:<output id='8'>0</output>
+      模糊:<output id='9'>0</output>
+      <br />
+      阴影x偏移量:<output id='10'>0</output>
+      阴影y偏移量:<output id='11'>0</output>
+      阴影距离:<output id='12'>0</output>
+      阴影颜色:<output id='13'>0</output>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <button id="export" onclick="upload()">导出</button>
+      </td>
+    </tr>
+  </table>
+
+  </div>
+
+<br>
+<div class="small" style="width: 400px;height: 300px ;overflow: hidden"></div>
+<br>
+<div class="cavans" style="height: 600px;width:400px;"></div>
+</body>
+</html>

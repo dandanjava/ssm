@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/jquery-3.2.1.js"></script>
+    <link href="../css/cropper.css" rel="stylesheet">
+    <script src="../js/cropper.js"></script>
+</head>
+<script>
+$(function () {
+    //初始化cropper
+     $('#image').cropper({
+        aspectRatio: 16 / 9,
+        viewMode:1,
+        dragMode:'none',
+        preview:".small",
+        responsive:false,
+        restore:false,
+//        modal:false,
+//        guides:false,
+//        background:false,
+//        autoCrop:false,
+//        autoCropArea:0.1,
+//        movable:false,
+//        scalable:false,
+//        zoomable:false,
+//        wheelZoomRatio:false,
+//        cropBoxMovable:false,
+//        cropBoxResizable:false,
+        ready:function () {
+            console.log("ready");
+        },
+        cropstart: function (e) {
+            console.log("cropstart");
+        },
+        cropmove: function (e) {
+            console.log("cropmove");
+        },
+        cropend: function (e) {
+            console.log("cropend");
+        },
+        crop: function (e) {
+            console.log("crop");
+        },
+        zoom: function (e) {
+            console.log("zoom");
+        }
+    });
+
+
+
+    var inputImage = document.getElementById('inputImage');
+    var URL = window.URL || window.webkitURL;
+    var blobURL;
+
+    if (URL) {
+        inputImage.onchange = function () {
+            var files = this.files;
+            var file;
+
+            if (files && files.length) {
+                file = files[0];
+                if (/^image\/\w+/.test(file.type)) {
+                    blobURL = URL.createObjectURL(file);
+                    $('#image').cropper("replace",blobURL);
+                } else {
+                    window.alert('Please choose an image file.');
+                }
+            }
+            $(inputImage).find("img").hide();
+        };
+    } else {
+        inputImage.disabled = true;
+        inputImage.parentNode.className += ' disabled';
+    }
+
+
+    //将图像和裁剪框重置为初始状态
+    $("#reset").on("click", function () {
+        alert("reset");
+        $('#image').cropper('reset');
+    })
+
+
+    //清除裁切框
+    $("#clear").on("click", function () {
+        $('#image').cropper('clear');
+    });
+//替换图像的src并重新构建cropper
+    $("#replace").on("click", function () {
+        $('#image').cropper('replace',"../image/598abe74N96590952.jpg",true );
+    });
+
+
+});
+function upload() {
+    $('#image').cropper('getCroppedCanvas').toBlob(function (blob) {
+        debugger;
+        var cas=$('#image').cropper('getCroppedCanvas');
+        $('.cavans').html(cas)  //在body显示出canvas元素
+        var formData = new FormData();
+        formData.append('croppedImage', blob,new Date().getTime()+".png");
+        console.log("base64url:"+cas.toDataURL('image/jpeg'));
+        console.log("BLOB:"+blob);
+        $.ajax('/cropperController/upload.mvc', {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                console.log('Upload success');
+            },
+            error: function () {
+                console.log('Upload error');
+            }
+        });
+    });
+}
+
+function changeGrayscale(grayscale){
+    console.log(grayscale);
+       $("#grayscaleVal").html(""+grayscale);
+        var image=$("#image");
+    image.css("filter","saturate("+0.5+")");
+    image.css("webkitFilter","saturate("+0.5+")");
+}
+</script>
+<body>
+<input id="photoBtn" type="button" onclick="document.getElementById('inputImage').click()" value="选择照片"><!-- 可以增加自己的样式 -->
+<br>灰度：<input type="range" max="1" min="0" step="0.01" value="0" onchange="changeGrayscale($('#grayscale').val())"><span id="grayscaleVal"></span>
+
+<input  id="inputImage"  type="file" accept="image/*" style="display: none;"/>
+<br/>
+
+<div class="container" style="width: 790px;height: 340px">
+    <img id="image" src="../image/59cb64b2Na1ce897e.jpg">
+</div>
+<div class="container" style="width: 790px;height: 340px">
+    <img id="image1" src="../image/59cb64b2Na1ce897e.jpg">
+</div>
+<div class="small" style="width: 400px;height: 300px ;overflow: hidden"></div>
+<button id="reset">reset</button>
+<button id="clear">clear</button>
+<button id="replace">replace</button>
+<button id="upload" onclick="upload()">upload</button><br>
+<div class=".cavans" style="height: 600px;width:400px;"></div>
+</body>
+</html>

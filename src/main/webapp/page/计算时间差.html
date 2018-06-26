@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+
+    Date.prototype.format = function(format) {
+        var date = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3),
+            "S+": this.getMilliseconds()
+        };
+        if (/(y+)/i.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+        }
+        for (var k in date) {
+            if (new RegExp("(" + k + ")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+            }
+        }
+        return format;
+    }
+
+    function refreshNowDate(){
+        var end =document.getElementById("end");
+        end.value=new Date().format("yyyy-MM-dd hh:mm:ss");
+    }
+    window.onload = function(){
+        refreshNowDate();
+        demo();
+    }
+
+    function demo(){
+        var start =document.getElementById("start");
+        var end =document.getElementById("end");
+        if(start.value==""||start.value==undefined){
+            alert("请输入开始时间");
+            return;
+        }
+        if(end.value==""||end.value==undefined){
+            alert("请输入结束时间");
+            return;
+        }
+        var startTime= createDate(start.value);
+        var  endTime= createDate(end.value);
+        var result1 =document.getElementById("result1");
+        var result2 =document.getElementById("result2");
+        var result3 =document.getElementById("result3");
+        var result4 =document.getElementById("result4");
+        var result5 =document.getElementById("result5");
+        result1.value=Math.floor((endTime.getTime()-startTime.getTime())/1000) +'秒';
+        result2.value=Math.floor((endTime.getTime()-startTime.getTime())/1000/60)+'分钟';
+        result3.value=Math.floor((endTime.getTime()-startTime.getTime())/1000/60/60)+'小时';
+        result4.value=Math.floor((endTime.getTime()-startTime.getTime())/1000/60/60/24)+'天';
+        result5.value=Math.floor((endTime.getTime()-startTime.getTime())/1000/60/60/24/365)+'年';
+
+    }
+    // 将2000-01-01 00:00:00形式的时间转化为Date对象，支持IE8
+    function createDate(date) {
+        var ps = date.split(" ");
+        var pd = ps[0].split("-");
+        var pt = ps.length > 1 ? ps[1].split(":") : [0, 0, 0];
+        return new Date(pd[0], pd[1] - 1, pd[2], pt[0], pt[1], pt[2]);
+    }
+</script>
+<body>
+<b style="color: red">注意：</b>填写时间时，时间格式必须类似2000-01-01 00:00:00<br>
+开始时间：<input id="start" type="input" value="2000-01-01 00:00:00"><br>
+结束时间：<input id="end" type="input" > <input type="button" value="刷新为当前时间" onclick="refreshNowDate()"><br>
+<input value="计算差值" onclick="demo()" type="button"><br>
+<div >
+两个时间相差秒数：<input id="result1" type="text"><br>
+两个时间相差分钟数：<input  id="result2" type="text"><br>
+两个时间相差小时数：<input id="result3" type="text"><br>
+两个时间相差天数：<input id="result4" type="text"><br>
+两个时间相差年数：<input id="result5" type="text"><br>
+</div>
+</body>
+</html>

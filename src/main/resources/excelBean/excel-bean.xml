@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<excels>
+
+	<excel class="com.gbq.po.User">
+		<column>
+			<columnName>id</columnName>
+			<fieldName>id</fieldName>
+		</column>
+		<column>
+			<columnName>用户姓名</columnName>
+			<fieldName>username</fieldName>
+		</column>
+		<column>
+			<columnName>性别</columnName>
+			<fieldName>sex</fieldName>
+		</column>
+		<column>
+			<columnName>生日</columnName>
+			<fieldName>birthday</fieldName>
+		</column>
+		<column>
+			<columnName>地址</columnName>
+			<fieldName>address</fieldName>
+		</column>
+	</excel>
+	
+
+</excels>
+

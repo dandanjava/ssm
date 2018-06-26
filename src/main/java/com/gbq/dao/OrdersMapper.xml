@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gbq.dao.OrdersMapper">
+<resultMap type="Orders" id="orders_resultMap">
+<result column="user_id" property="userId"></result>
+</resultMap>
+
+
+<!-- resultMap的使用，由于po里的字段为userId，而表里面的字段为 user_id，所以不能直接使用Orders对象当返回值-->
+<select id="findAllOrders"  resultMap="orders_resultMap" >
+select id,user_id,number,createtime,note from orders 
+</select>
+
+
+<!-- 多条件查询，where标签的使用 -->
+<select id="findOrders" parameterType="Orders" resultMap="orders_resultMap" >
+select id,user_id,number,createtime,note from orders 
+<where>
+<if test="id!=null and id!=''">
+ and id=#{id}
+</if>
+<if test="number !=null and number!=''">
+ and number like "%"#{number}"%"
+</if>
+</where>
+</select>
+
+
+<!-- sql中当需要使用in关键字时，foreach标签的使用 -->
+<select id="findOrdersByIds" parameterType="Orders" resultMap="orders_resultMap">
+select id,user_id,number,createtime,note from orders 
+<where>
+<foreach collection="ids" item="id" separator="," open="id in (" close=")">
+#{id}
+</foreach>
+</where>
+</select>
+
+
+<!-- 
+注意：只要是关联查询，返回值都需要是resultMap
+一对一关联映射 -->
+<resultMap type="Orders" id="ordersToUser_resultMap">
+<id column="id" property="id"></id>
+<result column="user_id" property="userId"></result>
+<result column="number" property="number"></result>
+<result column="createtime" property="createtime"></result>
+<association property="user" javaType="User">
+<id column="user_id" property="id"></id>
+<result column="username" property="username"></result>
+</association>
+</resultMap>
+<select id="ordersToUser" resultMap="ordersToUser_resultMap">
+select o.id,
+       o.user_id,
+       o.number,
+       o.createtime,
+       u.username
+       from orders o
+       left join user u on o.user_id=u.id
+     
+</select>
+
+
+<!-- 一对多关联映射 -->
+
+<resultMap type="User" id="userToOrders_resultMap">
+  <id column="user_id" property="id"></id>
+  <result column="username" property="username"></result>
+    <collection property="orders" ofType="Orders">
+		<id column="id" property="id"></id>
+		<result column="user_id" property="userId"></result>
+		<result column="number" property="number"></result>
+		<result column="createtime" property="createtime"></result>
+	</collection>
+</resultMap>
+<select id="userToOrders" resultMap="userToOrders_resultMap">
+select o.id,
+       u.id as user_id,
+       o.number,
+       o.createtime,
+       u.username
+       from user u
+       left join orders o on o.user_id=u.id
+</select>
+</mapper>
