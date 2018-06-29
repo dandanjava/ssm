@@ -192,6 +192,9 @@
   <build>
        <finalName>ssm</finalName>
     <resources>
+	  <resource>
+        <directory>src/main/resources</directory>
+      </resource>
       <resource>
         <directory>src/main/java</directory>
         <includes>
@@ -221,11 +224,6 @@
         </configuration>
       </plugin>
     </plugins>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
   </build>
   <!-- resource插件 -->
 
