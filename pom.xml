@@ -190,7 +190,7 @@
 
 
   <build>
-   <finalName>ssm</finalName>
+    <finalName>ssm</finalName>
     <resources>
       <resource>
         <directory>src/main/java</directory>

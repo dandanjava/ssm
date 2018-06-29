@@ -2,6 +2,7 @@ package com.gbq.controller;
 
 import com.gbq.po.User;
 import com.gbq.service.IUserService;
+import com.gbq.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +49,10 @@ public class UserController {
         userService.deleteUserById(id);
     }
 
-
+    @RequestMapping("excelOut")
+    public void excelOut(HttpServletResponse response) {
+        List<User> userByUsername = userService.findAllUser();
+        ExcelUtils.list2Excel(userByUsername,"用户表",response);
+    }
 
 }
